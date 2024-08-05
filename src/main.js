@@ -16,7 +16,7 @@ function handleSearch(event) {
   loader.classList.remove('hidden');
 
   const searchWord = input.value.trim().toLowerCase();
-  fetchImages('${searchWord}').then(data => {
+  fetchImages(`${searchWord}`).then(data => {
     if (data.total === 0 || searchWord === '') {
       iziToast.error({
         position: 'topRight',
