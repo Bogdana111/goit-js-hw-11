@@ -12,23 +12,42 @@ searchForm.addEventListener('submit', handleSearch);
 
 function handleSearch(event) {
   event.preventDefault();
+  const searchWord = input.value.trim().toLowerCase();
+
+  if (searchWord === '') {
+    iziToast.error({
+      position: 'topRight',
+      message: 'Search query cannot be empty. Please enter a keyword!',
+    });
+    return;
+  }
+
   clearGallery();
   loader.classList.remove('hidden');
 
-  const searchWord = input.value.trim().toLowerCase();
-  fetchImages(`${searchWord}`).then(data => {
-    if (data.total === 0 || searchWord === '') {
+  fetchImages(searchWord)
+    .then(data => {
+      if (data.total === 0) {
+        iziToast.error({
+          position: 'topRight',
+          message:
+            'Sorry, there are no images matching your search query. Please try again!',
+        });
+      } else {
+        renderImageCard(data);
+      }
+    })
+    .catch(error => {
       iziToast.error({
         position: 'topRight',
         message:
-          'Sorry, there are no images matching your search query. Please try again!',
+          'An error occurred while fetching data. Please try again later.',
       });
+      console.error(error);
+    })
+    .finally(() => {
       loader.classList.add('hidden');
-      return;
-    } else {
-      renderImageCard(data);
-    }
-    loader.classList.add('hidden');
-  });
+    });
+
   searchForm.reset();
 }
